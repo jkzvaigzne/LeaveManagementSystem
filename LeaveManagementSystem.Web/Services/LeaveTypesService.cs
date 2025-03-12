@@ -5,16 +5,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LeaveManagementSystem.Web.Services;
 
-public class LeaveTypesServices(ApplicationDbContext context, IMapper mapper) : ILeaveTypesServices
+public class LeaveTypesService(ApplicationDbContext _context, IMapper _mapper) : ILeaveTypesServices
 {
-    private readonly ApplicationDbContext _context;
-    private readonly IMapper _mapper;
-
     public async Task<List<LeaveTypeReadOnlyVM>> GetAll()
     {
         var data = await _context.LeaveTypes.ToListAsync();
         var viewData = _mapper.Map<List<LeaveTypeReadOnlyVM>>(data);
-
         return viewData;
     }
 
@@ -54,21 +50,22 @@ public class LeaveTypesServices(ApplicationDbContext context, IMapper mapper) : 
         await _context.SaveChangesAsync();
     }
 
-    private bool LeaveTypeExists(int id)
+
+    public bool LeaveTypeExists(int id)
     {
         return _context.LeaveTypes.Any(e => e.Id == id);
     }
 
-    private async Task<bool> CheckIfLeaveTypeExistsAsync(string name)
+    public async Task<bool> CheckIfLeaveTypeNameExists(string name)
     {
         var lowercaseName = name.ToLower();
         return await _context.LeaveTypes.AnyAsync(q => q.Name.ToLower().Equals(lowercaseName));
     }
-    private async Task<bool> CheckIfLeaveTypeExistsAsyncForEdit(LeaveTypeEditVM leaveTypeEdit)
+
+    public async Task<bool> CheckIfLeaveTypeNameExistsForEdit(LeaveTypeEditVM leaveTypeEdit)
     {
         var lowercaseName = leaveTypeEdit.Name.ToLower();
         return await _context.LeaveTypes.AnyAsync(q => q.Name.ToLower().Equals(lowercaseName)
-        && q.Id != leaveTypeEdit.Id);
+            && q.Id != leaveTypeEdit.Id);
     }
 }
-
