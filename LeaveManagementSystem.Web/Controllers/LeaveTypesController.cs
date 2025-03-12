@@ -27,7 +27,7 @@ namespace LeaveManagementSystem.Web.Controllers
         {
             var data = await _context.LeaveTypes.ToListAsync();
             // convert the data model in view model - use auto mapper
-            var viewData = _mapper.Map<List<IndexVM>>(data);
+            var viewData = _mapper.Map<List<LeaveTypeReadOnlyVM>>(data);
             // return the view to the view
             return View(viewData);
         }
@@ -47,7 +47,9 @@ namespace LeaveManagementSystem.Web.Controllers
                 return NotFound();
             }
 
-            return View(leaveType);
+            var viewData = _mapper.Map<LeaveTypeReadOnlyVM>(leaveType);
+
+            return View(viewData);
         }
 
         // GET: LeaveTypes/Create
