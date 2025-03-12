@@ -8,8 +8,9 @@ namespace LeaveManagementSystem.Web.MappingProfiles
     {
         public AutoMapperProfile()
         {
+            //.ForMember(dest => dest.Days, opt => opt.MapFrom(src => src.NumberOfDays));
             CreateMap<LeaveType, LeaveTypeReadOnlyVM>();
-                //.ForMember(dest => dest.Days, opt => opt.MapFrom(src => src.NumberOfDays));
+            CreateMap<LeaveTypeCreateVM, LeaveType>();
         }
     }
 }
