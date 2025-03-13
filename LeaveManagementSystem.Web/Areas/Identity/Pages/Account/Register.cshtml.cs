@@ -102,7 +102,8 @@ namespace LeaveManagementSystem.Web.Areas.Identity.Pages.Account
             public DateOnly DateOfBirth { get; set; }
 
             public string RoleName { get; set; }
-            public string[] RolesNames { get; set; }
+            public string[] RoleNames { get; set; }
+
         }
 
 
@@ -114,7 +115,7 @@ namespace LeaveManagementSystem.Web.Areas.Identity.Pages.Account
                 .Select(q => q.Name)
                 .Where(q => q != "Administrator")
                 .ToArrayAsync();
-            Input.RolesNames = roles;
+            Input.RoleNames = roles;
         }
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
