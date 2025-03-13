@@ -178,6 +178,11 @@ namespace LeaveManagementSystem.Web.Areas.Identity.Pages.Account
             }
 
             // If we got this far, something failed, redisplay form
+            var roles = await _roleManager.Roles
+                .Select(q => q.Name)
+                .Where(q => q != "Administrator")
+                .ToArrayAsync();
+            Input.RoleNames = roles;
             return Page();
         }
 
