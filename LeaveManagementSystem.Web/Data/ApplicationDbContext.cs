@@ -55,8 +55,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
                 RoleId = "df494301-35c8-49bd-8d17-08ddb9fb8f3a",
                 UserId = "1d759058-7ba0-4e62-9250-3dfa5844f9f2"
             });
-}
+        }
 
-    public DbSet<LeaveType> LeaveTypes{ get; set; }
-
+        public DbSet<LeaveType> LeaveTypes{ get; set; }
+        public DbSet<LeaveAllocation> LeaveAllocation { get; set; }
+        public DbSet<Period> Periods { get; set; }
 }
