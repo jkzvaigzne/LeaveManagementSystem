@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using LeaveManagementSystem.Web.Data;
 using LeaveManagementSystem.Web.Models.LeaveTypes;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,9 +9,8 @@ public class LeaveTypesService(ApplicationDbContext _context, IMapper _mapper) :
 {
     public async Task<List<LeaveTypeReadOnlyVM>> GetAll()
     {
-        // var data = SELECT * FROM LeaveTypes
         var data = await _context.LeaveTypes.ToListAsync();
-        // convert the datamodel into a view model - Use AutoMapper
+
         var viewData = _mapper.Map<List<LeaveTypeReadOnlyVM>>(data);
         return viewData;
     }
