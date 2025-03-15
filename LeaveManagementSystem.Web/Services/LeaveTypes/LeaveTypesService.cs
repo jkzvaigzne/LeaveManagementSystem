@@ -1,15 +1,16 @@
 ﻿using AutoMapper;
-using LeaveManagementSystem.Web.Data;
 using LeaveManagementSystem.Web.Models.LeaveTypes;
 using Microsoft.EntityFrameworkCore;
 
-namespace LeaveManagementSystem.Web.Services;
+namespace LeaveManagementSystem.Web.Services.LeaveTypes;
 
 public class LeaveTypesService(ApplicationDbContext _context, IMapper _mapper) : ILeaveTypesServices
 {
     public async Task<List<LeaveTypeReadOnlyVM>> GetAll()
     {
+        // var data = SELECT * FROM LeaveTypes
         var data = await _context.LeaveTypes.ToListAsync();
+        // convert the datamodel into a view model - Use AutoMapper
         var viewData = _mapper.Map<List<LeaveTypeReadOnlyVM>>(data);
         return viewData;
     }
@@ -50,7 +51,6 @@ public class LeaveTypesService(ApplicationDbContext _context, IMapper _mapper) :
         await _context.SaveChangesAsync();
     }
 
-
     public bool LeaveTypeExists(int id)
     {
         return _context.LeaveTypes.Any(e => e.Id == id);
@@ -67,5 +67,11 @@ public class LeaveTypesService(ApplicationDbContext _context, IMapper _mapper) :
         var lowercaseName = leaveTypeEdit.Name.ToLower();
         return await _context.LeaveTypes.AnyAsync(q => q.Name.ToLower().Equals(lowercaseName)
             && q.Id != leaveTypeEdit.Id);
+    }
+
+    public async Task<bool> DaysExceedMaximum(int leaveTypeId, int days)
+    {
+        var leaveType = await _context.LeaveTypes.FindAsync(leaveTypeId);
+        return leaveType.NumberOfDays < days;
     }
 }
