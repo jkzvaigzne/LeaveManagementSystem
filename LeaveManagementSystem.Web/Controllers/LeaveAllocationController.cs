@@ -1,5 +1,4 @@
 ﻿using LeaveManagementSystem.Web.Services.LeaveAllocations;
-using Microsoft.AspNetCore.Mvc;
 
 namespace LeaveManagementSystem.Web.Controllers
 {
@@ -8,8 +7,14 @@ namespace LeaveManagementSystem.Web.Controllers
     {
         public async Task<IActionResult> Details()
         {
-            var employeeVm = await _leaveAllocationsService.GetEmployeeAllocations();
-            return View(employeeVm);
+            var employeeVM = await _leaveAllocationsService.GetEmployeeAllocations();
+
+            if (employeeVM == null)
+            {
+                return NotFound(); 
+            }
+
+            return View(employeeVM); 
         }
     }
 }
