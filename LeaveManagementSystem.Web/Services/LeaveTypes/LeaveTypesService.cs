@@ -1,11 +1,10 @@
 ﻿using AutoMapper;
-using LeaveManagementSystem.Web.Data;
 using LeaveManagementSystem.Web.Models.LeaveTypes;
 using Microsoft.EntityFrameworkCore;
 
 namespace LeaveManagementSystem.Web.Services.LeaveTypes;
 
-public class LeaveTypesService(ApplicationDbContext _context, IMapper _mapper) : ILeaveTypesServices
+public class LeaveTypesService(ApplicationDbContext _context, IMapper _mapper) : ILeaveTypesService
 {
     public async Task<List<LeaveTypeReadOnlyVM>> GetAll()
     {
