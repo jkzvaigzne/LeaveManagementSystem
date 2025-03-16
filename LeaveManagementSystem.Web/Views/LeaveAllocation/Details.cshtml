@@ -38,35 +38,44 @@
 
 <hr />
 
-<div class="card">
-    <div class="card-header">
-        <h4 class="mb-0">Leave Allocations</h4>
-    </div>
-    <ul class="list-group list-group-flush">
-        <li class="list-group-item">
-            <div class="row fw-bold">
-                <div class="col-md-3">Leave Name</div>
-                <div class="col-md-3">Original Allocation</div>
-                <div class="col-md-3">Current Allocation</div>
-                <div class="col-md-3 text-end">Action</div>
-            </div>
-        </li>
-        @foreach (var allocation in Model.LeaveAllocations)
-        {
+@if(Model.LeaveAllocations.Any())
+{
+    <div class="card">
+        <div class="card-header">
+            <h4 class="mb-0">Leave Allocations for Period @Model.LeaveAllocations[0].Period.Name</h4>
+        </div>
+        <ul class="list-group list-group-flush">
             <li class="list-group-item">
-                <div class="row align-items-center">
-                    <div class="col-md-3">@allocation.LeaveType.Name</div>
-                    <div class="col-md-3">
-                        <span class="badge bg-primary">@allocation.Days</span>
-                    </div>
-                    <div class="col-md-3">
-                        <span class="badge bg-warning text-dark">@allocation.Days</span>
-                    </div>
-                    <div class="col-md-3 text-end">
-                        <a asp-controller="LeaveRequest" asp-action="Create" class="btn btn-success btn-sm">Request Leave</a>
-                    </div>
+                <div class="row fw-bold">
+                    <div class="col-md-3">Leave Name</div>
+                    <div class="col-md-3">Original Allocation</div>
+                    <div class="col-md-3">Current Allocation</div>
+                    <div class="col-md-3 text-end">Action</div>
                 </div>
             </li>
-        }
-    </ul>
-</div>
+            @foreach (var allocation in Model.LeaveAllocations)
+            {
+                <li class="list-group-item">
+                    <div class="row align-items-center">
+                        <div class="col-md-3">@allocation.LeaveType.Name</div>
+                        <div class="col-md-3">
+                            <span class="badge bg-primary">@allocation.Days</span>
+                        </div>
+                        <div class="col-md-3">
+                            <span class="badge bg-warning text-dark">@allocation.Days</span>
+                        </div>
+                        <div class="col-md-3 text-end">
+                            <a asp-controller="LeaveRequest" asp-action="Create" class="btn btn-success btn-sm">Request Leave</a>
+                        </div>
+                    </div>
+                </li>
+            }
+        </ul>
+    </div>
+} 
+else
+{
+    <div class="alert alert-warning" role="alert">
+        <h2>No Leave Allocations found for this employee. Please contact your Administrator.</h2>
+    </div>
+}

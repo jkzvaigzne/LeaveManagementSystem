@@ -59,15 +59,27 @@ namespace LeaveManagementSystem.Web.Services.LeaveAllocations
         public async Task<List<LeaveAllocation>> GetAllocations()
         {
             var user = await _userManager.GetUserAsync(_httpContextAccessor.HttpContext?.User);
+            var currentDate = DateTime.Now;
+
+            var period = await _context.Periods
+                .Where(q => q.StartDate.Year <= currentDate.Year && q.EndDate.Year >= currentDate.Year)
+                .FirstOrDefaultAsync();
+
+            if (period == null)
+            {
+                return new List<LeaveAllocation>();
+            }
+
             var leaveAllocations = await _context.LeaveAllocation
                 .Include(q => q.LeaveType)
                 .Include(q => q.Employee)
                 .Include(q => q.Period)
-                .Where(q => q.EmployeeId == user.Id)
+                .Where(q => q.EmployeeId == user.Id && q.PeriodId == period.Id)
                 .ToListAsync();
 
             return leaveAllocations;
         }
+
 
         public async Task<EmployeeAllocationVM> GetEmployeeAllocations()
         {
