@@ -3,7 +3,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LeaveManagementSystem.Web.Services.LeaveAllocations
 {
-    public class LeaveAllocationService(ApplicationDbContext _context) : ILeaveAllocationsService
+    public class LeaveAllocationService(
+        ApplicationDbContext _context,
+        IHttpContextAccessor _httpContextAccessor,
+        UserManager<ApplicationUser> _userManager) : ILeaveAllocationsService
     {
         public async Task AllocateLeave(string employeeId)
         {
@@ -50,13 +53,14 @@ namespace LeaveManagementSystem.Web.Services.LeaveAllocations
             await _context.SaveChangesAsync();
         }
 
-        public async Task<List<LeaveAllocation>> GetAllocations(string employeeId)
+        public async Task<List<LeaveAllocation>> GetAllocations()
         {
+            var user = await _userManager.GetUserAsync(_httpContextAccessor.HttpContext?.User);
             var leaveAllocations = await _context.LeaveAllocation
                 .Include(q => q.LeaveType)
                 .Include(q => q.Employee)
                 .Include(q => q.Period)
-                .Where(q => q.EmployeeId == employeeId)
+                .Where(q => q.EmployeeId == user.Id)
                 .ToListAsync();
 
             return leaveAllocations;
