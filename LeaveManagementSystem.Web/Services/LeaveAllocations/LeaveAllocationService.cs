@@ -69,7 +69,7 @@ namespace LeaveManagementSystem.Web.Services.LeaveAllocations
             return leaveAllocations;
         }
 
-        public async Task<EmployeeAllocationVM> GetEmployeeAllocation()
+        public async Task<EmployeeAllocationVM> GetEmployeeAllocations()
         {
             var allocations = await GetAllocations();
             var allocationVmList = _mapper.Map<List<LeaveAllocation>, List<LeaveAllocationVM>>(allocations);

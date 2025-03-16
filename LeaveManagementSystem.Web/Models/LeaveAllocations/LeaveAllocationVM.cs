@@ -8,7 +8,7 @@ namespace LeaveManagementSystem.Web.Models.LeaveAllocations
         public int Id { get; set; }
 
         [Display(Name = "Number of Days")]
-        public int NumberOfDays { get; set; }
+        public int Days { get; set; }
 
         [Display(Name = "Allocation Period")]
         public PeriodVM Period { get; set; } = new PeriodVM();
