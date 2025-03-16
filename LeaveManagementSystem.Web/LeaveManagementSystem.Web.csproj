@@ -19,6 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Views\LeaveAllocation\" />
     <Folder Include="wwwroot\images\" />
   </ItemGroup>
 

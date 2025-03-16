@@ -1,4 +1,6 @@
-﻿using LeaveManagementSystem.Web.InvalidOperationExceptionHelpers;
+﻿using AutoMapper;
+using LeaveManagementSystem.Web.InvalidOperationExceptionHelpers;
+using LeaveManagementSystem.Web.Models.LeaveAllocations;
 using Microsoft.EntityFrameworkCore;
 
 namespace LeaveManagementSystem.Web.Services.LeaveAllocations
@@ -6,7 +8,8 @@ namespace LeaveManagementSystem.Web.Services.LeaveAllocations
     public class LeaveAllocationService(
         ApplicationDbContext _context,
         IHttpContextAccessor _httpContextAccessor,
-        UserManager<ApplicationUser> _userManager) : ILeaveAllocationsService
+        UserManager<ApplicationUser> _userManager,
+        IMapper _mapper) : ILeaveAllocationsService
     {
         public async Task AllocateLeave(string employeeId)
         {
@@ -64,6 +67,25 @@ namespace LeaveManagementSystem.Web.Services.LeaveAllocations
                 .ToListAsync();
 
             return leaveAllocations;
+        }
+
+        public async Task<EmployeeAllocationVM> GetEmployeeAllocation()
+        {
+            var allocations = await GetAllocations();
+            var allocationVmList = _mapper.Map<List<LeaveAllocation>, List<LeaveAllocationVM>>(allocations);
+
+            var user = await _userManager.GetUserAsync(_httpContextAccessor.HttpContext?.User);
+            var employeeVM = new EmployeeAllocationVM
+            {
+                DateOfBirth = user.DateOfBirth,
+                Email = user.Email,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Id = user.Id,
+                LeaveAllocations = allocationVmList
+            };
+
+            return employeeVM;
         }
     }
 }
