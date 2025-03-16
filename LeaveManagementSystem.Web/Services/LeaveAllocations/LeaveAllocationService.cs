@@ -55,12 +55,39 @@ namespace LeaveManagementSystem.Web.Services.LeaveAllocations
             // Save changes to the database
             await _context.SaveChangesAsync();
         }
-
-        public async Task<List<LeaveAllocation>> GetAllocations()
+        public async Task<EmployeeAllocationVM> GetEmployeeAllocations(string? userId)
         {
-            var user = await _userManager.GetUserAsync(_httpContextAccessor.HttpContext?.User);
-            var currentDate = DateTime.Now;
+            var user = string.IsNullOrEmpty(userId) 
+                ? await _userManager.GetUserAsync(_httpContextAccessor.HttpContext?.User) 
+                : await _userManager.FindByIdAsync(userId);
 
+            var allocations = await GetAllocations(user.Id);
+            var allocationVmList = _mapper.Map<List<LeaveAllocation>, List<LeaveAllocationVM>>(allocations);
+
+            var employeeVM = new EmployeeAllocationVM
+            {
+                DateOfBirth = user.DateOfBirth,
+                Email = user.Email,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Id = user.Id,
+                LeaveAllocations = allocationVmList
+            };
+
+            return employeeVM;
+        }
+
+        public async Task<List<EmployeeListVM>> GetEmployees()
+        {
+            var users = await _userManager.GetUsersInRoleAsync(Roles.Employee);
+            var employees = _mapper.Map<List<ApplicationUser>, List<EmployeeListVM>>(users.ToList());
+
+            return employees;
+        }
+
+        private async Task<List<LeaveAllocation>> GetAllocations(string? userId)
+        {
+            var currentDate = DateTime.Now;
             var period = await _context.Periods
                 .Where(q => q.StartDate.Year <= currentDate.Year && q.EndDate.Year >= currentDate.Year)
                 .FirstOrDefaultAsync();
@@ -74,30 +101,10 @@ namespace LeaveManagementSystem.Web.Services.LeaveAllocations
                 .Include(q => q.LeaveType)
                 .Include(q => q.Employee)
                 .Include(q => q.Period)
-                .Where(q => q.EmployeeId == user.Id && q.PeriodId == period.Id)
+                .Where(q => q.EmployeeId == userId && q.PeriodId == period.Id)
                 .ToListAsync();
 
             return leaveAllocations;
-        }
-
-
-        public async Task<EmployeeAllocationVM> GetEmployeeAllocations()
-        {
-            var allocations = await GetAllocations();
-            var allocationVmList = _mapper.Map<List<LeaveAllocation>, List<LeaveAllocationVM>>(allocations);
-
-            var user = await _userManager.GetUserAsync(_httpContextAccessor.HttpContext?.User);
-            var employeeVM = new EmployeeAllocationVM
-            {
-                DateOfBirth = user.DateOfBirth,
-                Email = user.Email,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                Id = user.Id,
-                LeaveAllocations = allocationVmList
-            };
-
-            return employeeVM;
         }
     }
 }
