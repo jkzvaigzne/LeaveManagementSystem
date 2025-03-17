@@ -2,6 +2,6 @@
 {
     public class  LeaveAllocationEditVM : LeaveAllocationVM
     {
-        public EmployeeListVM Employee { get; set; }
+        public EmployeeListVM? Employee { get; set; }
     }
 }
