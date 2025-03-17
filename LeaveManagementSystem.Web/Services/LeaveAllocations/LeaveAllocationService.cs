@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using LeaveManagementSystem.Web.InvalidOperationExceptionHelpers;
 using LeaveManagementSystem.Web.Models.LeaveAllocations;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 
 namespace LeaveManagementSystem.Web.Services.LeaveAllocations
@@ -13,13 +14,12 @@ namespace LeaveManagementSystem.Web.Services.LeaveAllocations
     {
         public async Task AllocateLeave(string employeeId)
         {
-            // Get all the leave types
-            var leaveTypes = await _context.LeaveTypes.ToListAsync();
+            var leaveTypes = await _context.LeaveTypes
+                .Where(q => !q.LeaveAllocations.Any(x => x.EmployeeId == employeeId))
+                .ToListAsync();
 
-            // Get the current date as DateOnly for consistent comparison with Period's DateOnly fields
+
             var currentDate = DateOnly.FromDateTime(DateTime.Now);
-
-            // Get the current period based on the year
             var period = await _context.Periods
                 .Where(q => q.StartDate.Year <= currentDate.Year && q.EndDate.Year >= currentDate.Year)
                 .OrderByDescending(q => q.EndDate)
@@ -30,16 +30,18 @@ namespace LeaveManagementSystem.Web.Services.LeaveAllocations
                 throw new InvalidOperationException(InvalidOperationExceptionHelper.NoPeriodFoundForCurrentYear);
             }
 
-            // Calculate the remaining months in the period, considering the year span
             var monthsRemaining = (period.EndDate.Year - currentDate.Year) * 12 + period.EndDate.Month - currentDate.Month;
 
-            // Iterate through each leave type and allocate the leave
             foreach (var leaveType in leaveTypes)
             {
-                // Calculate the accrual rate (days per month)
-                var accrualRate = decimal.Divide(leaveType.NumberOfDays, 12);
+                // works but not best practice
 
-                // Calculate the leave allocation for the remaining months
+                //var allocationExists = await AllocationExists(employeeId, period.Id, leaveType.Id);
+                //if(allocationExists)
+                //{
+                //    continue;
+                //}
+                var accrualRate = decimal.Divide(leaveType.NumberOfDays, 12);
                 var leaveAllocation = new LeaveAllocation
                 {
                     EmployeeId = employeeId,
@@ -48,11 +50,9 @@ namespace LeaveManagementSystem.Web.Services.LeaveAllocations
                     Days = (int)Math.Ceiling(accrualRate * monthsRemaining)
                 };
 
-                // Add the allocation to the context
                 _context.Add(leaveAllocation);
             }
 
-            // Save changes to the database
             await _context.SaveChangesAsync();
         }
         public async Task<EmployeeAllocationVM> GetEmployeeAllocations(string? userId)
@@ -63,6 +63,7 @@ namespace LeaveManagementSystem.Web.Services.LeaveAllocations
 
             var allocations = await GetAllocations(user.Id);
             var allocationVmList = _mapper.Map<List<LeaveAllocation>, List<LeaveAllocationVM>>(allocations);
+            var leaveTypesCount = await _context.LeaveTypes.CountAsync();
 
             var employeeVM = new EmployeeAllocationVM
             {
@@ -71,7 +72,8 @@ namespace LeaveManagementSystem.Web.Services.LeaveAllocations
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 Id = user.Id,
-                LeaveAllocations = allocationVmList
+                LeaveAllocations = allocationVmList,
+                IsCompletedAllocation = leaveTypesCount == allocations.Count()
             };
 
             return employeeVM;
@@ -105,6 +107,17 @@ namespace LeaveManagementSystem.Web.Services.LeaveAllocations
                 .ToListAsync();
 
             return leaveAllocations;
+        }
+
+        private async Task<bool> AllocationExists(string userId, int periodId, int LeaveTypeId)
+        {
+            var exists = await _context.LeaveAllocation.AnyAsync(q =>
+            q.EmployeeId == userId
+            && q.LeaveTypeId == LeaveTypeId
+            && q.PeriodId == periodId
+            );
+
+            return exists;
         }
     }
 }
