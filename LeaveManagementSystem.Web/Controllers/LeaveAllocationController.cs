@@ -1,4 +1,5 @@
-﻿using LeaveManagementSystem.Web.Services.LeaveAllocations;
+﻿using LeaveManagementSystem.Web.Models.LeaveAllocations;
+using LeaveManagementSystem.Web.Services.LeaveAllocations;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LeaveManagementSystem.Web.Controllers
@@ -26,6 +27,31 @@ namespace LeaveManagementSystem.Web.Controllers
         {
             await _leaveAllocationsService.AllocateLeave(id);
             return RedirectToAction(nameof(Details), new {userId = id});
+        }
+
+        public async Task<IActionResult> EditAllocation(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var allocation = await _leaveAllocationsService.GetEmployeeAllocations(id.Value);
+            if (allocation == null)
+            {
+                return NotFound();
+            }
+
+            return View(allocation);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+
+        public async Task<IActionResult> EditAllocation(LeaveAllocationEditVM allocationEditVm)
+        {
+            await _leaveAllocationsService.EditAllocation(allocationEditVm);
+            return RedirectToAction(nameof(Details), new { userId = allocationEditVm.Employee.Id });
         }
 
         public async Task<IActionResult> Details(string? userId)

@@ -86,6 +86,36 @@ namespace LeaveManagementSystem.Web.Services.LeaveAllocations
 
             return employees;
         }
+        public async Task<LeaveAllocationEditVM> GetEmployeeAllocations(int allocationId)
+        {
+            var allocation = await _context.LeaveAllocation
+                .Include(q => q.LeaveType)
+                .Include(q => q.Employee)
+                .FirstOrDefaultAsync(q => q.Id == allocationId);
+
+            var model = _mapper.Map<LeaveAllocationEditVM>(allocation);
+
+            return model;
+        }
+
+        public async Task EditAllocation(LeaveAllocationEditVM allocationEditVm)
+        {
+            var leaveAllocation = await GetEmployeeAllocations(allocationEditVm.Id);
+
+            if (leaveAllocation == null)
+            {
+                throw new Exception(InvalidOperationExceptionHelper.LeaveAllocationRecordNotExists);
+            }
+
+            leaveAllocation.Days = allocationEditVm.Days;
+            // 1. option = _context.Update(leaveAllocation);
+            // 2. option = _context.Entry(leaveAllocation).State = EntityState.Modified;
+            // await _context.SaveChangesAsync();
+
+            await _context.LeaveAllocation
+                .Where(q => q.Id == allocationEditVm.Id)
+                .ExecuteUpdateAsync(s => s.SetProperty(e => e.Days, allocationEditVm.Days));
+        }
 
         private async Task<List<LeaveAllocation>> GetAllocations(string? userId)
         {

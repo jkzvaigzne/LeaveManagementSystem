@@ -79,7 +79,11 @@
                             <span class="badge bg-primary">@allocation.Days</span>
                         </div>
                         <div class="col-md-3">
-                            <span class="badge bg-warning text-dark">@allocation.Days</span>
+                            @if (isAdmin)
+                            {
+                                <a class="badge bg-warning text-dark" asp-action="EditAllocation" asp-route-id="@allocation.Id">Edit Allocation</a>
+
+                            }
                         </div>
                         <div class="col-md-3 text-end">
                             <a asp-controller="LeaveRequest" asp-action="Create" class="btn btn-success btn-sm">Request Leave</a>
