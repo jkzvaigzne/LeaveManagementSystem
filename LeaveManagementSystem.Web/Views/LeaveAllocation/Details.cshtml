@@ -41,7 +41,9 @@
 <hr />
 @if(isAdmin && !Model.IsCompletedAllocation)
 {
-    <a class="btn btn-warning" asp-action="AllocateLeave" asp-route-userId="@Model.Id">Allocation Leave</a>
+    <a class="btn btn-warning" asp-action="AllocateLeave" asp-route-userId="@Model.Id">Allocate Leave</a>
+    <br/>
+    <br/>
 }
 @if(Model.LeaveAllocations.Any())
 {
