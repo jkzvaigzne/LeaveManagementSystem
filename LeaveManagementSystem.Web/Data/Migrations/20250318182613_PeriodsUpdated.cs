@@ -6,17 +6,43 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace LeaveManagementSystem.Web.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class AddedLeaveAllocationTable : Migration
+    public partial class PeriodsUpdated : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "LeaveRequest",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LeaveRequest", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "LeaveRequestStatuses",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LeaveRequestStatuses", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "Periods",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     StartDate = table.Column<DateOnly>(type: "date", nullable: false),
                     EndDate = table.Column<DateOnly>(type: "date", nullable: false)
                 },
@@ -64,7 +90,7 @@ namespace LeaveManagementSystem.Web.Data.Migrations
                 keyColumn: "Id",
                 keyValue: "1d759058-7ba0-4e62-9250-3dfa5844f9f2",
                 columns: new[] { "ConcurrencyStamp", "PasswordHash", "SecurityStamp" },
-                values: new object[] { "bf13e70f-cf40-4991-844d-4130b520e6d9", "AQAAAAIAAYagAAAAEOreeZJdBRtGbAysVEF7tXpUT9E2RD0NrYlZ88LOr3uW3ASTLoXdW3pKHs4FkkWVYQ==", "26bf5f14-ef40-44ee-b23f-65f516441058" });
+                values: new object[] { "b0034fa2-61a4-4e66-a787-d25fb3975462", "AQAAAAIAAYagAAAAEPGxR+JKSMY8wgd60sGbhv+GUiIzVvCx+wGbvwy5Eeq0mJitHNXLhTOCFU6M6p0Lcw==", "8bd4291f-825d-4f94-9cd9-3e2a57069701" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_LeaveAllocation_EmployeeId",
@@ -87,6 +113,12 @@ namespace LeaveManagementSystem.Web.Data.Migrations
         {
             migrationBuilder.DropTable(
                 name: "LeaveAllocation");
+
+            migrationBuilder.DropTable(
+                name: "LeaveRequest");
+
+            migrationBuilder.DropTable(
+                name: "LeaveRequestStatuses");
 
             migrationBuilder.DropTable(
                 name: "Periods");
