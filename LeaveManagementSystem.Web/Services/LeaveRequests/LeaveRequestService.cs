@@ -29,7 +29,7 @@ namespace LeaveManagementSystem.Web.Services.LeaveRequests
             var allocationToDeduct = await _context.LeaveAllocation.
                 FirstAsync(q => q.LeaveTypeId == model.LeaveTypeId && q.EmployeeId == user.Id);
 
-            allocationToDeduct.Days =-numberOfDays;
+            allocationToDeduct.Days -= numberOfDays;
 
             await _context.SaveChangesAsync();
         }

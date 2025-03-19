@@ -40,9 +40,11 @@ namespace LeaveManagementSystem.Web.Controllers
                 ModelState.AddModelError(string.Empty, "You have exceeded your allocation");
                 ModelState.AddModelError(nameof(model.EndDate), "The number of days requested is invalid.");
             }
+
             if (ModelState.IsValid)
             {
               await _leaveRequestService.CreateLeaveRequest(model);
+              return RedirectToAction(nameof(Index));
             }
 
             var leaveTypes = await _leaveTypesService.GetAll();
