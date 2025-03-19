@@ -55,45 +55,45 @@
     <br />
     <br/>
 }
-@if(Model.LeaveAllocations.Any())
+@if (Model.LeaveAllocations.Any())
 {
     <div class="card">
         <div class="card-header">
-            <h4 class="mb-0">Leave Allocations for Period @Model.LeaveAllocations[0].Period.Name</h4>
+            <h4>Leave Allocations for period @Model.LeaveAllocations[0].Period.Name</h4>
         </div>
         <ul class="list-group list-group-flush">
             <li class="list-group-item">
-                <div class="row fw-bold">
-                    <div class="col-md-3">Leave Name</div>
-                    <div class="col-md-3">Original Allocation</div>
-                    <div class="col-md-3">Current Allocation</div>
-                    <div class="col-md-3 text-end">Action</div>
+                <div class="row">
+                    <div class="col"><strong>Leave Name</strong></div>
+                    <div class="col"><strong>Original Allocation</strong></div>
+                    <div class="col"><strong>Current Allocation</strong></div>
+                    <div class="col"><strong>Action</strong></div>
                 </div>
             </li>
             @foreach (var allocation in Model.LeaveAllocations)
             {
                 <li class="list-group-item">
-                    <div class="row align-items-center">
-                        <div class="col-md-3">@allocation.LeaveType.Name</div>
-                        <div class="col-md-3">
-                            <span class="badge bg-primary">@allocation.Days</span>
+                    <div class="row">
+                        <div class="col">@allocation.LeaveType.Name</div>
+                        <div class="col">
+                            <span class="badge rounded-pill bg-primary">@allocation.Days</span>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col">
+                            <span class="badge rounded-pill bg-warning">@allocation.Days</span>
+                        </div>
+                        <div class="col">
                             @if (isAdmin)
                             {
-                                <a class="badge bg-warning text-dark" asp-action="EditAllocation" asp-route-id="@allocation.Id">Edit Allocation</a>
-
+                                <a class="btn btn-warning" asp-action="EditAllocation" asp-route-id="@allocation.Id">Edit Allocation</a>
                             }
-                        </div>
-                        <div class="col-md-3 text-end">
-                            <a asp-controller="LeaveRequests" asp-action="Create" class="btn btn-success btn-sm">Request Leave</a>
+                            <a asp-controller="LeaveRequests" asp-action="Create" asp-route-leaveTypeId="@allocation.LeaveType.Id" class="btn btn-success">Request Leave</a>
                         </div>
                     </div>
                 </li>
             }
         </ul>
     </div>
-} 
+}
 else
 {
     <div class="alert alert-warning" role="alert">
