@@ -1,12 +1,11 @@
 ﻿@model LeaveRequestCreateVM
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Create Leave Request";
 }
 
-<h1>Create</h1>
 
-<h4>LeaveRequest</h4>
+<h1>Create Leave Request</h1>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -17,29 +16,30 @@
                 <input asp-for="StartDate" class="form-control" />
                 <span asp-validation-for="StartDate" class="text-danger"></span>
             </div>
+            <br />
             <div class="form-group">
                 <label asp-for="EndDate" class="control-label"></label>
                 <input asp-for="EndDate" class="form-control" />
                 <span asp-validation-for="EndDate" class="text-danger"></span>
             </div>
+            <br />
             <div class="form-group">
                 <label asp-for="LeaveTypeId" class="control-label"></label>
-                <select asp-for="LeaveTypeId" class ="form-control" asp-items="ViewBag.LeaveTypeId"></select>
+                <select asp-for="LeaveTypeId" class ="form-select" asp-items="Model.LeaveTypes"></select>
             </div>
+            <br />
             <div class="form-group">
                 <label asp-for="RequestComments" class="control-label"></label>
-                <input asp-for="RequestComments" class="form-control" />
+                <textarea asp-for="RequestComments" class="form-control" /></textarea>
                 <span asp-validation-for="RequestComments" class="text-danger"></span>
             </div>
+            <br />
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" value="Create" class="btn btn-success" />
+                <a asp-controller="LeaveAllocation" asp-action="Details" class="btn btn-danger">Cancel</a>
             </div>
         </form>
     </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {
