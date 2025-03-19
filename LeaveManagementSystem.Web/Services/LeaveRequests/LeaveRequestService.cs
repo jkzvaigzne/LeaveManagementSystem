@@ -26,11 +26,10 @@ namespace LeaveManagementSystem.Web.Services.LeaveRequests
             _context.Add(leaveRequest);
 
             var numberOfDays = model.EndDate.DayNumber - model.StartDate.DayNumber;
-            var allocationToDeduct = _context.LeaveAllocation.FirstAsync(
-                q => q.LeaveTypeId == model.LeaveTypeId
-                && q.EmployeeId == user.Id);
+            var allocationToDeduct = await _context.LeaveAllocation.
+                FirstAsync(q => q.LeaveTypeId == model.LeaveTypeId && q.EmployeeId == user.Id);
 
-            allocationToDeduct.Days =- numberOfDays;
+            allocationToDeduct.Days =-numberOfDays;
 
             await _context.SaveChangesAsync();
         }
@@ -43,6 +42,17 @@ namespace LeaveManagementSystem.Web.Services.LeaveRequests
         public Task<EmployeeLeaveRequestListVM> GetEmployeeLeaveRequests()
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<bool> RequestDatesExceedAllocation(LeaveRequestCreateVM model)
+        {
+            var user = await _userManager.GetUserAsync(_httpContextAccessor.HttpContext?.User);
+            var numberOfDays = model.EndDate.DayNumber - model.StartDate.DayNumber;
+
+            var allocation = await _context.LeaveAllocation.FirstAsync(q => q.LeaveTypeId 
+            == model.LeaveTypeId && q.EmployeeId == user.Id);
+
+            return allocation.Days < numberOfDays;
         }
 
         public Task ReviewLeaveRequest(ReviewLeaveRequestVM model)
