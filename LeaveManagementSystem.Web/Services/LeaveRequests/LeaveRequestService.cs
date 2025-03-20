@@ -9,9 +9,12 @@ namespace LeaveManagementSystem.Web.Services.LeaveRequests
         IHttpContextAccessor _httpContextAccessor,
         ApplicationDbContext _context) : ILeaveRequestService
     {
-        public Task CancelLeaveRequewst(int leaveRequestId)
+        public async Task CancelLeaveRequewst(int leaveRequestId)
         {
-            throw new NotImplementedException();
+            var leaveRequest = await _context.LeaveRequest.FindAsync(leaveRequestId);
+            leaveRequest.LeaveRequestStatusId = (int)LeaveRequestStatusEnum.Cancelled;
+
+            await _context.SaveChangesAsync();
         }
 
         public async Task CreateLeaveRequest(LeaveRequestCreateVM model)

@@ -55,9 +55,10 @@ namespace LeaveManagementSystem.Web.Controllers
         // Employee Cancel Request
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Cancel(int leaveRequestId)
+        public async Task<IActionResult> Cancel(int id)
         {
-            return View();
+            await _leaveRequestService.CancelLeaveRequewst(id);
+            return RedirectToAction(nameof(Index));
         }
 
         // Admin/Supe review request

@@ -72,7 +72,10 @@
                 <td>
                     @if (item.LeaveRequestStatus == LeaveRequestStatusEnum.Pending)
                     {
-                        <button data-id="@item.Id" class="btn btn-danger cancelBtn">Cancel</button>
+                        <form asp-action="Cancel">
+                            <input type="hidden" asp-for="@item.Id" name="id"/>
+                            <input class="btn btn-danger" type="submit" value="Cancel" />
+                        </form>
                     }
                 </td>
             </tr>
