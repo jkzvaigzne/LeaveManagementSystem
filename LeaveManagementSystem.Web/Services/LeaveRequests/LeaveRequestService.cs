@@ -21,7 +21,7 @@ namespace LeaveManagementSystem.Web.Services.LeaveRequests
             var user = await _userManager.GetUserAsync(_httpContextAccessor.HttpContext?.User);
             leaveRequest.EmployeeId = user.Id;
 
-            leaveRequest.LeaveRequestStatusId = (int)LeaveRequestStatus.Pending;
+            leaveRequest.LeaveRequestStatusId = (int)LeaveRequestStatusEnum.Pending;
 
             _context.Add(leaveRequest);
 
@@ -34,7 +34,7 @@ namespace LeaveManagementSystem.Web.Services.LeaveRequests
             await _context.SaveChangesAsync();
         }
 
-        public Task<LeaveRequestListVM> GetAllLeaveRequests()
+        public Task<LeaveRequestReadOnlyVM> GetAllLeaveRequests()
         {
             throw new NotImplementedException();
         }
