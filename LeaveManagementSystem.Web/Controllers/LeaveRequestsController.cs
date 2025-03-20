@@ -12,7 +12,8 @@ namespace LeaveManagementSystem.Web.Controllers
         // Employee View Request
         public async Task<IActionResult> Index()
         {
-            return View();
+            var model = await _leaveRequestService.GetEmployeeLeaveRequests();
+            return View(model);
         }
 
         public async Task<IActionResult> Create()
