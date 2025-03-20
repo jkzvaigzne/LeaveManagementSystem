@@ -14,7 +14,6 @@ namespace LeaveManagementSystem.Web.Services.LeaveRequests
             var leaveRequest = await _context.LeaveRequest.FindAsync(leaveRequestId);
             leaveRequest.LeaveRequestStatusId = (int)LeaveRequestStatusEnum.Cancelled;
 
-            //restore allocation days base on request
             var numberOfDays = leaveRequest.EndDate.DayNumber - leaveRequest.StartDate.DayNumber;
             var allocation = await _context.LeaveAllocation.
                 FirstAsync(q => q.LeaveTypeId == leaveRequest.LeaveTypeId && q.EmployeeId == leaveRequest.EmployeeId);
