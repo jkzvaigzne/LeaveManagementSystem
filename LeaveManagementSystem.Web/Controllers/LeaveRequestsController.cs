@@ -67,9 +67,10 @@ namespace LeaveManagementSystem.Web.Controllers
             return View(model);
         }
 
-        public async Task<IActionResult> Review(int leaveRequestId)
+        public async Task<IActionResult> Review(int id)
         {
-            return View();
+            var model = await _leaveRequestService.GetLeaveRequestForReview(id);
+            return View(model);
         }
 
         [HttpPost]

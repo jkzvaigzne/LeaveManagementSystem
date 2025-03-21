@@ -11,5 +11,6 @@ namespace LeaveManagementSystem.Web.Services.LeaveRequests
         Task<bool> RequestDatesExceedAllocation(LeaveRequestCreateVM model);
         Task<List<LeaveRequestReadOnlyVM>> GetEmployeeLeaveRequests();
         Task<EmployeeLeaveRequestListVM> AdminGetAllLeaveRequests();
+        Task<ReviewLeaveRequestVM> GetLeaveRequestForReview(int id);
     }
 }
