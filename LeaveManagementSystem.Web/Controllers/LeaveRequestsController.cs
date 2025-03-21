@@ -1,7 +1,6 @@
 ﻿using LeaveManagementSystem.Web.Models.LeaveRequests;
 using LeaveManagementSystem.Web.Services.LeaveRequests;
 using LeaveManagementSystem.Web.Services.LeaveTypes;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace LeaveManagementSystem.Web.Controllers
@@ -64,7 +63,7 @@ namespace LeaveManagementSystem.Web.Controllers
         // Admin/Supe review request
         public async Task<IActionResult> ListRequest()
         {
-            var model = _leaveRequestService.AdminGetAllLeaveRequests();
+            var model = await _leaveRequestService.AdminGetAllLeaveRequests();
             return View(model);
         }
 
