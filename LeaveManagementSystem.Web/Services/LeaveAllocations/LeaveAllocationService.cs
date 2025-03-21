@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using LeaveManagementSystem.Web.InvalidOperationExceptionHelpers;
 using LeaveManagementSystem.Web.Models.LeaveAllocations;
+using LeaveManagementSystem.Web.Services.Periods;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,7 +11,8 @@ namespace LeaveManagementSystem.Web.Services.LeaveAllocations
         ApplicationDbContext _context,
         IHttpContextAccessor _httpContextAccessor,
         UserManager<ApplicationUser> _userManager,
-        IMapper _mapper) : ILeaveAllocationsService
+        IMapper _mapper,
+        IPeriodsService _periodsService) : ILeaveAllocationsService
     {
         public async Task AllocateLeave(string employeeId)
         {
@@ -20,10 +22,7 @@ namespace LeaveManagementSystem.Web.Services.LeaveAllocations
 
 
             var currentDate = DateOnly.FromDateTime(DateTime.Now);
-            var period = await _context.Periods
-                .Where(q => q.StartDate.Year <= currentDate.Year && q.EndDate.Year >= currentDate.Year)
-                .OrderByDescending(q => q.EndDate)
-                .FirstOrDefaultAsync();
+            var period = await _periodsService.GetCurrentPeriod();
 
             if (period == null)
             {
@@ -34,13 +33,6 @@ namespace LeaveManagementSystem.Web.Services.LeaveAllocations
 
             foreach (var leaveType in leaveTypes)
             {
-                // works but not best practice
-
-                //var allocationExists = await AllocationExists(employeeId, period.Id, leaveType.Id);
-                //if(allocationExists)
-                //{
-                //    continue;
-                //}
                 var accrualRate = decimal.Divide(leaveType.NumberOfDays, 12);
                 var leaveAllocation = new LeaveAllocation
                 {
@@ -108,10 +100,6 @@ namespace LeaveManagementSystem.Web.Services.LeaveAllocations
             }
 
             leaveAllocation.Days = allocationEditVm.Days;
-            // 1. option = _context.Update(leaveAllocation);
-            // 2. option = _context.Entry(leaveAllocation).State = EntityState.Modified;
-            // await _context.SaveChangesAsync();
-
             await _context.LeaveAllocation
                 .Where(q => q.Id == allocationEditVm.Id)
                 .ExecuteUpdateAsync(s => s.SetProperty(e => e.Days, allocationEditVm.Days));
@@ -119,10 +107,7 @@ namespace LeaveManagementSystem.Web.Services.LeaveAllocations
 
         private async Task<List<LeaveAllocation>> GetAllocations(string? userId)
         {
-            var currentDate = DateTime.Now;
-            var period = await _context.Periods
-                .Where(q => q.StartDate.Year <= currentDate.Year && q.EndDate.Year >= currentDate.Year)
-                .FirstOrDefaultAsync();
+            var period = await _periodsService.GetCurrentPeriod();
 
             if (period == null)
             {
