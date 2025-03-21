@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using LeaveManagementSystem.Web.InvalidOperationExceptionHelpers;
 using LeaveManagementSystem.Web.Models.LeaveAllocations;
 using LeaveManagementSystem.Web.Models.LeaveRequests;
 using LeaveManagementSystem.Web.Services.LeaveAllocations;
@@ -94,12 +95,16 @@ namespace LeaveManagementSystem.Web.Services.LeaveRequests
             var period = await _context.Periods.SingleAsync(q => q.EndDate.Year == currentDate.Year);
             var numberOfDays = model.EndDate.DayNumber - model.StartDate.DayNumber;
 
-            var allocation = await _context.LeaveAllocation.FirstAsync(q => q.LeaveTypeId
+            var allocation = await _context.LeaveAllocation.FirstOrDefaultAsync(q => q.LeaveTypeId
             == model.LeaveTypeId
             && q.EmployeeId == user.Id
             && q.PeriodId == period.Id
             );
 
+            if (allocation == null)
+            {
+                return false; 
+            }
             return allocation.Days < numberOfDays;
         }
 
@@ -127,7 +132,8 @@ namespace LeaveManagementSystem.Web.Services.LeaveRequests
         {
             var leaveRequest = await _context.LeaveRequest
                 .Include(q => q.LeaveType)
-                .FirstAsync(q => q.Id == id);
+                .Include(q => q.Employee)
+                .FirstOrDefaultAsync(q => q.Id == id);
 
             var user = await _userService.GetUserById(leaveRequest.Employee.Id);
 
@@ -155,6 +161,11 @@ namespace LeaveManagementSystem.Web.Services.LeaveRequests
         {
             var allocation = await _leaveAllocationService.GetCurrentAllocation(
                 leaveRequest.LeaveTypeId, leaveRequest.EmployeeId);
+
+            if (allocation == null)
+            {
+                throw new InvalidOperationException(InvalidOperationExceptionHelper.NoLeaveAllocationFoundForGivenTypeEmployee);
+            }
 
             var numberOfDays = CalculateDays(leaveRequest.StartDate, leaveRequest.EndDate);
 
