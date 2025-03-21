@@ -75,9 +75,10 @@ namespace LeaveManagementSystem.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Review()
+        public async Task<IActionResult> Review(int id, bool approved)
         {
-            return View();
+            await _leaveRequestService.ReviewLeaveRequest(id, approved);
+            return RedirectToAction(nameof(ListRequest));
         }
     }
 }

@@ -94,7 +94,7 @@ namespace LeaveManagementSystem.Web.Services.LeaveRequests
               Id = q.Id,
               LeaveType = q.LeaveType?.Name,
               LeaveRequestStatus = (LeaveRequestStatusEnum)q.LeaveRequestStatusId,
-              NumberOfDays = q.EndDate.DayNumber - q.StartDate.DayNumber
+              NumberOfDays = q.EndDate.DayNumber - q.StartDate.DayNumber,
             }).ToList();
 
             return model;
@@ -111,9 +111,27 @@ namespace LeaveManagementSystem.Web.Services.LeaveRequests
             return allocation.Days < numberOfDays;
         }
 
-        public Task ReviewLeaveRequest(ReviewLeaveRequestVM model)
+        public async Task ReviewLeaveRequest(int leaveRequestId, bool approved)
         {
-            throw new NotImplementedException();
+            var user = await _userManager.GetUserAsync(_httpContextAccessor.HttpContext?.User);
+
+            var leaveRequest = await _context.LeaveRequest.FindAsync(leaveRequestId);
+            leaveRequest.LeaveRequestStatusId = approved 
+                ? (int)LeaveRequestStatusEnum.Approved 
+                : (int)LeaveRequestStatusEnum.Declined;
+
+            leaveRequest.ReviewerId = user.Id;
+
+            if(!approved)
+            {
+                var allocation = await _context.LeaveAllocation.
+                FirstAsync(q => q.LeaveTypeId == leaveRequest.LeaveTypeId && q.EmployeeId == leaveRequest.EmployeeId);
+                
+                var numberOfDays = leaveRequest.EndDate.DayNumber - leaveRequest.StartDate.DayNumber;
+                allocation.Days += numberOfDays;
+            }
+
+            await _context.SaveChangesAsync();
         }
 
         public async Task<ReviewLeaveRequestVM> GetLeaveRequestForReview(int id)
@@ -131,6 +149,7 @@ namespace LeaveManagementSystem.Web.Services.LeaveRequests
                 NumberOfDays = leaveRequest.EndDate.DayNumber - leaveRequest.StartDate.DayNumber,
                 Id = leaveRequest.Id,
                 LeaveType = leaveRequest.LeaveType.Name,
+                RequestComments = leaveRequest.RequestComments,
                 Employee = new EmployeeListVM
                 {
                     Id = leaveRequest.Employee.Id,
