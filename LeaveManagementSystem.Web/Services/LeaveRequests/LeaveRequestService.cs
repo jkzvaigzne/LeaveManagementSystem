@@ -10,14 +10,18 @@ namespace LeaveManagementSystem.Web.Services.LeaveRequests
         IHttpContextAccessor _httpContextAccessor,
         ApplicationDbContext _context) : ILeaveRequestService
     {
-        public async Task CancelLeaveRequewst(int leaveRequestId)
+        public async Task CancelLeaveRequest(int leaveRequestId)
         {
             var leaveRequest = await _context.LeaveRequest.FindAsync(leaveRequestId);
             leaveRequest.LeaveRequestStatusId = (int)LeaveRequestStatusEnum.Cancelled;
-
+            var currentDate = DateTime.Now;
+            var period = await _context.Periods.SingleAsync(q => q.EndDate.Year == currentDate.Year);
             var numberOfDays = leaveRequest.EndDate.DayNumber - leaveRequest.StartDate.DayNumber;
             var allocation = await _context.LeaveAllocation.
-                FirstAsync(q => q.LeaveTypeId == leaveRequest.LeaveTypeId && q.EmployeeId == leaveRequest.EmployeeId);
+                FirstAsync(q => q.LeaveTypeId == leaveRequest.LeaveTypeId 
+                && q.EmployeeId == leaveRequest.EmployeeId
+                && q.PeriodId == period.Id
+                );
 
             allocation.Days += numberOfDays;
 
@@ -65,9 +69,14 @@ namespace LeaveManagementSystem.Web.Services.LeaveRequests
 
             _context.Add(leaveRequest);
 
+            var currentDate = DateTime.Now;
+            var period = await _context.Periods.SingleAsync(q => q.EndDate.Year == currentDate.Year);
             var numberOfDays = model.EndDate.DayNumber - model.StartDate.DayNumber;
             var allocationToDeduct = await _context.LeaveAllocation.
-                FirstAsync(q => q.LeaveTypeId == model.LeaveTypeId && q.EmployeeId == user.Id);
+                FirstAsync(q => q.LeaveTypeId == model.LeaveTypeId 
+                && q.EmployeeId == user.Id
+                && q.PeriodId == period.Id
+                );
 
             allocationToDeduct.Days -= numberOfDays;
 
@@ -103,10 +112,15 @@ namespace LeaveManagementSystem.Web.Services.LeaveRequests
         public async Task<bool> RequestDatesExceedAllocation(LeaveRequestCreateVM model)
         {
             var user = await _userManager.GetUserAsync(_httpContextAccessor.HttpContext?.User);
+            var currentDate = DateTime.Now; 
+            var period = await _context.Periods.SingleAsync(q => q.EndDate.Year == currentDate.Year);
             var numberOfDays = model.EndDate.DayNumber - model.StartDate.DayNumber;
 
             var allocation = await _context.LeaveAllocation.FirstAsync(q => q.LeaveTypeId 
-            == model.LeaveTypeId && q.EmployeeId == user.Id);
+            == model.LeaveTypeId 
+            && q.EmployeeId == user.Id
+            && q.PeriodId == period.Id
+            );
 
             return allocation.Days < numberOfDays;
         }
@@ -124,8 +138,12 @@ namespace LeaveManagementSystem.Web.Services.LeaveRequests
 
             if(!approved)
             {
+                var currentDate = DateTime.Now;
+                var period = await _context.Periods.SingleAsync(q => q.EndDate.Year == currentDate.Year);
                 var allocation = await _context.LeaveAllocation.
-                FirstAsync(q => q.LeaveTypeId == leaveRequest.LeaveTypeId && q.EmployeeId == leaveRequest.EmployeeId);
+                FirstAsync(q => q.LeaveTypeId == leaveRequest.LeaveTypeId 
+                && q.EmployeeId == leaveRequest.EmployeeId
+                && q.PeriodId == period.Id);
                 
                 var numberOfDays = leaveRequest.EndDate.DayNumber - leaveRequest.StartDate.DayNumber;
                 allocation.Days += numberOfDays;
