@@ -1,8 +1,9 @@
-using LeaveManagementSystem.Web.Services.Email;
+﻿using LeaveManagementSystem.Web.Services.Email;
 using LeaveManagementSystem.Web.Services.LeaveAllocations;
 using LeaveManagementSystem.Web.Services.LeaveRequests;
 using LeaveManagementSystem.Web.Services.LeaveTypes;
 using LeaveManagementSystem.Web.Services.Periods;
+using LeaveManagementSystem.Web.Services.Users;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
@@ -19,6 +20,7 @@ builder.Services.AddScoped<ILeaveTypesService, LeaveTypesService>();
 builder.Services.AddScoped<ILeaveAllocationsService, LeaveAllocationService>();
 builder.Services.AddScoped<ILeaveRequestService, LeaveRequestService>();
 builder.Services.AddScoped<IPeriodsService, PeriodsService>();
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 
 builder.Services.AddHttpContextAccessor();
