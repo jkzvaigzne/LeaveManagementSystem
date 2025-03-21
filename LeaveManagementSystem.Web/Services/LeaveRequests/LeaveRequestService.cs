@@ -22,7 +22,37 @@ namespace LeaveManagementSystem.Web.Services.LeaveRequests
 
             await _context.SaveChangesAsync();
         }
+        public async Task<EmployeeLeaveRequestListVM> AdminGetAllLeaveRequests()
+        {
+            var leaveRequests = await _context.LeaveRequest
+                .Include(q => q.LeaveType)
+                .ToListAsync();
 
+            var aprovedLeaveRequestsCount = leaveRequests.Count(q => q.LeaveRequestStatusId == (int)LeaveRequestStatusEnum.Approved);
+            var pendingLeaveRequestsCount = leaveRequests.Count(q => q.LeaveRequestStatusId == (int)LeaveRequestStatusEnum.Pending);
+            var declinedLeaveRequestsCount = leaveRequests.Count(q => q.LeaveRequestStatusId == (int)LeaveRequestStatusEnum.Declined);
+
+            var leaveRequestModels = leaveRequests.Select(q => new LeaveRequestReadOnlyVM
+            {
+                StartDate = q.StartDate,
+                EndDate = q.EndDate,
+                Id = q.Id,
+                LeaveType = q.LeaveType?.Name,
+                LeaveRequestStatus = (LeaveRequestStatusEnum)q.LeaveRequestStatusId,
+                NumberOfDays = q.EndDate.DayNumber - q.StartDate.DayNumber
+            }).ToList();
+
+            var model = new EmployeeLeaveRequestListVM
+            {
+                ApprovedRequests = aprovedLeaveRequestsCount,
+                PendingRequests = pendingLeaveRequestsCount,
+                DeclinedRequests = declinedLeaveRequestsCount,
+                TotalRequests = leaveRequests.Count,
+                LeaveRequests = leaveRequestModels
+            };
+
+            return model;
+        }
         public async Task CreateLeaveRequest(LeaveRequestCreateVM model)
         {
             var leaveRequest = _mapper.Map<LeaveRequest>(model);

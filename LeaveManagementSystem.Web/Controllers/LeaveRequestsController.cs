@@ -64,7 +64,8 @@ namespace LeaveManagementSystem.Web.Controllers
         // Admin/Supe review request
         public async Task<IActionResult> ListRequest()
         {
-            return View();
+            var model = _leaveRequestService.AdminGetAllLeaveRequests();
+            return View(model);
         }
 
         public async Task<IActionResult> Review(int leaveRequestId)
