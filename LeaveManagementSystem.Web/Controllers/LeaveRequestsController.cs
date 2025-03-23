@@ -33,8 +33,6 @@ namespace LeaveManagementSystem.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(LeaveRequestCreateVM model)
         {
-            // Validate that the days dont exceed the allocation 
-
             if(await _leaveRequestService.RequestDatesExceedAllocation(model))
             {
                 ModelState.AddModelError(string.Empty, "You have exceeded your allocation");
@@ -61,18 +59,20 @@ namespace LeaveManagementSystem.Web.Controllers
         }
 
         // Admin/Supe review request
+        [Authorize(Policy = "AdminSupervisorOnly")]
         public async Task<IActionResult> ListRequest()
         {
             var model = await _leaveRequestService.AdminGetAllLeaveRequests();
             return View(model);
         }
-
+        // Admin/Supe review request
         public async Task<IActionResult> Review(int id)
         {
             var model = await _leaveRequestService.GetLeaveRequestForReview(id);
             return View(model);
         }
 
+        // Admin/Supe review request
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Review(int id, bool approved)

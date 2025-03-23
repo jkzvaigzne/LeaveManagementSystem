@@ -23,6 +23,12 @@ builder.Services.AddScoped<IPeriodsService, PeriodsService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 
+builder.Services.AddAuthorization(options => {
+    options.AddPolicy("AdminSupervisorOnly", policy => {
+        policy.RequireRole(Roles.Administrator, Roles.Supervisor);
+    });
+});
+
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
