@@ -92,7 +92,15 @@ namespace LeaveManagementSystem.Web.Services.LeaveRequests
         {
             var user = await _userService.GetLoggedInUser();
             var currentDate = DateTime.Now;
-            var period = await _context.Periods.SingleAsync(q => q.EndDate.Year == currentDate.Year);
+            var period = await _context.Periods
+                .Where(q => q.EndDate.Year == currentDate.Year)
+                .OrderByDescending(q => q.EndDate) 
+                .FirstOrDefaultAsync();
+
+            if (period == null)
+            {
+                throw new Exception("No period found for the current year.");
+            }
             var numberOfDays = model.EndDate.DayNumber - model.StartDate.DayNumber;
 
             var allocation = await _context.LeaveAllocation.FirstOrDefaultAsync(q => q.LeaveTypeId
