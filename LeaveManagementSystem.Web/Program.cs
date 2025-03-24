@@ -1,11 +1,17 @@
 ﻿using LeaveManagement.Application;
 using LeaveManagementSystem.Data;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 DataServicesRegistration.AddDataServices(builder.Services, builder.Configuration);
 ApplicationServicesRegistration.AddApplicationServices(builder.Services);
+
+builder.Host.UseSerilog((ctx, config) => 
+        config.WriteTo.Console()
+        .ReadFrom.Configuration(ctx.Configuration)
+);
 
 builder.Services.AddAuthorization(options =>
 {
