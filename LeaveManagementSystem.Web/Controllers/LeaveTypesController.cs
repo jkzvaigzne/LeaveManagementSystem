@@ -1,5 +1,5 @@
-﻿using LeaveManagementSystem.Web.Models.LeaveTypes;
-using LeaveManagementSystem.Web.Services.LeaveTypes;
+﻿using LeaveManagement.Application.Models.LeaveTypes;
+using LeaveManagement.Application.Services.LeaveTypes;
 using Microsoft.EntityFrameworkCore;
 
 namespace LeaveManagementSystem.Web.Controllers
