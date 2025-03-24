@@ -1,14 +1,12 @@
 ﻿using LeaveManagement.Application;
-using Microsoft.EntityFrameworkCore;
+using LeaveManagementSystem.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(connectionString));
-builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+DataServicesRegistration.AddDataServices(builder.Services, builder.Configuration);
 ApplicationServicesRegistration.AddApplicationServices(builder.Services);
+
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("AdminSupervisorOnly", policy =>
