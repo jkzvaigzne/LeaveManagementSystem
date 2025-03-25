@@ -31,10 +31,30 @@
             @Html.DisplayFor(model => model.EndDate)
         </dd>
     </dl>
-    
-    <form asp-action="Delete">
+
+    <form id="deleteForm" asp-action="Delete">
         <input type="hidden" asp-for="Id" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to List</a>
+        <button type="button" id="deleteBtn" class="btn btn-danger">Delete</button>
+        <a asp-action="Index" class="btn btn-primary">Back to List</a>
     </form>
 </div>
+
+@section Scripts {
+    <script>
+        document.getElementById("deleteBtn").addEventListener("click", function (e) {
+            Swal.fire({
+                title: "Are you sure?",
+                text: "This action cannot be undone!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Yes, delete it!",
+                cancelButtonText: "No, cancel",
+                dangerMode: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById("deleteForm").submit();
+                }
+            });
+        });
+    </script>
+}
