@@ -1,6 +1,6 @@
 ﻿namespace LeaveManagement.Common.Static
 {
-    public class InvalidOperationExceptionHelper
+    public static class InvalidOperationExceptionHelper
     {
         public const string NoPeriodFoundForCurrentYear = "No period found for the current year.";
         public const string LeaveAllocationRecordNotExists = "Leave allocation record does not exists!";
